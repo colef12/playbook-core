@@ -78,6 +78,9 @@ function parseAtis(raw){
   while ((m = landRe.exec(t))) res.land.push(...grabList(m[1], m[2]));
   const depRe = new RegExp('\\b(?:DEPG|DEPTG|DEPTNG|DEPARTING|DEPART|DEPARTURES?|DEPS?|DEPTS?)\\s+(?:RWYS?|RYS?|RUNWAYS?)\\s*' + RWY + '\\b' + LIST_TAIL, 'g');
   while ((m = depRe.exec(t))) res.dep.push(...grabList(m[1], m[2]));
+  // "LANDING AND DEPARTING 34, 29" / "LDG AND DEPG RWY 22": the same runways both ways
+  const bothRe = new RegExp('\\b(?:LDG|LNDG|LANDING|LAND|ARRIVING|ARRIVALS?)\\s+(?:AND|&|/)\\s+(?:DEPG|DEPTG|DEPARTING|DEPARTURES?|DEPS?)\\s+(?:(?:RWYS?|RYS?|RUNWAYS?)\\s*)?' + RWY + '\\b' + LIST_TAIL, 'g');
+  while ((m = bothRe.exec(t))){ const l = grabList(m[1], m[2]); res.land.push(...l); res.dep.push(...l); }
   res.land = uniq([...res.land, ...res.appr.map(a => a.rwy)]);
   res.dep = uniq(res.dep);
   // weather
